@@ -1,0 +1,20 @@
+<div class="app-container">
+    <!-- Topbar -->
+    <app-topbar class="app-topbar" (menuToggle)="toggleSidebar()">
+    </app-topbar>
+
+    <!-- Row: Sidebar + Main Content -->
+    <div class="app-main">
+        <app-sidebar class="app-sidebar" [collapsed]="isSidebarCollapsed" [open]="isSidebarOpen">
+        </app-sidebar>
+
+        <div class="app-content">
+            <router-outlet></router-outlet>
+        </div>
+    </div>
+
+    <!-- Mobile backdrop -->
+    @if (isSidebarOpen) {
+    <div class="backdrop" (click)="closeSidebar()"></div>
+    }
+</div>

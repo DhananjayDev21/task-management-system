@@ -1,0 +1,95 @@
+<mat-tab-group>
+    <!-- Tab 1: Tasks -->
+    <mat-tab label="Tasks">
+
+        <div class="task-container">
+            <!-- Create Task -->
+            <div class="create-task-box" (click)="openTaskCreation()">
+                <span class="plus-icon">+</span>
+                <p>Create Task</p>
+            </div>
+        </div>
+
+        <hr />
+
+
+        <mat-accordion multi="true" class="task-accordion">
+            @for (group of groupedTasks; track group.label) {
+            <mat-expansion-panel [expanded]="group.label === 'Today'">
+                <mat-expansion-panel-header>
+                    <mat-panel-title>
+                        {{ group.label === 'Today' || group.label === 'Yesterday' || group.label === 'Tomorrow'
+                        ? group.label
+                        : (group.label | date:'EEEE, MMM d, y') }}
+                    </mat-panel-title>
+                    <mat-panel-description>
+                        {{ group.tasks.length }} task(s)
+                    </mat-panel-description>
+                </mat-expansion-panel-header>
+
+                <!-- Filter bar -->
+                <div class="filter-bar">
+                    @for (filter of group.filters; track filter.name) {
+                    <span (click)="setFilter(group, filter.name)" [class.active]="group.activeFilter === filter.name"
+                        [ngClass]="filter.name">
+                        {{ filter.name }} ({{ filter.count }})
+                    </span>
+                    }
+                </div>
+
+
+                <!-- Task list -->
+                <div class="task-list">
+                    @for (task of group.filteredTasks; track task.id) {
+                    <div class="task-card {{task.status}}">
+                        <div class="task-header">
+                            <h3>{{ task.title }}</h3>
+                            <span class="priority {{task.priority}}">
+                                {{ task.priority | titlecase }}
+                            </span>
+                        </div>
+
+                        <p class="description">{{ task.description }}</p>
+
+                        <div class="task-meta">
+                            <p><b>Status:</b> {{ task.status | titlecase }}</p>
+                            <p><b>Category:</b> {{ task.category }}</p>
+                            <p>
+                                <b>Start:</b>
+                                {{ (task.startDate + 'T' + task.startTime) | date:'EEE, MMM d, y, hh:mm a' }}
+                            </p>
+                            <p>
+                                <b>Due:</b>
+                                {{ (task.dueDate + 'T' + task.dueTime) | date:'EEE, MMM d, y, hh:mm a' }}
+                            </p>
+
+                        </div>
+
+                        <div class="task-tags">
+                            @for (tag of task.tags; track $index) {
+                            <span class="tag">{{ tag }}</span>
+                            }
+                        </div>
+                        <hr>
+                        <div class="task-actions">
+                            <button class="edit-btn" (click)="editTask(task)">Edit</button>
+                            <button class="delete-btn" (click)="deleteTask(task.id)">Delete</button>
+                        </div>
+                    </div>
+                    }
+                </div>
+
+            </mat-expansion-panel>
+            }
+        </mat-accordion>
+    </mat-tab>
+
+    <!-- Tab 2: Insights -->
+    <mat-tab label="Insights">
+        <ng-template matTabContent>
+            <app-task-insights></app-task-insights>
+        </ng-template>
+    </mat-tab>
+
+
+</mat-tab-group>

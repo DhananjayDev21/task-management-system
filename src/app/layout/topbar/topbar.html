@@ -1,0 +1,20 @@
+<div class="topbar">
+    <!-- Left -->
+    <div class="topbar-left">
+        <button class="menu-btn" (click)="menuToggle.emit()">
+            <i class="fas fa-bars"></i>
+        </button>
+        <span class="title">Task Manager</span>
+    </div>
+
+    <!-- Right -->
+    <div class="topbar-right">
+        <div class="user-profile" [class.open]="isDropdownOpen" (click)="toggleDropdown()">
+            <i class="fas fa-user-circle fa-lg"></i>
+            <div class="dropdown">
+                <a routerLink="/profile"><i class="fas fa-user"></i> Profile</a>
+                <a routerLink="/logout"><i class="fas fa-sign-out-alt"></i> Logout</a>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,96 @@
+<div class="sidebar" [class.collapsed]="collapsed" [class.open]="open">
+    <ul>
+        <!-- Dashboard -->
+        <li>
+            <a routerLink="/demo2" routerLinkActive="active">
+                <i class="fas fa-home"></i>
+                <span>Dashboard</span>
+            </a>
+        </li>
+
+        <!-- My Tasks -->
+        <li>
+            <a routerLink="/my-tasks" routerLinkActive="active">
+                <i class="fas fa-tasks"></i>
+                <span>My Tasks</span>
+            </a>
+        </li>
+
+        <!-- Income Management -->
+        <li>
+            <a routerLink="/my-notes" routerLinkActive="active">
+                <i class="fas fa-wallet"></i>
+                <span>My Notes</span>
+            </a>
+        </li>
+
+        <!-- Expense Management -->
+        <li>
+            <a routerLink="/transactions" routerLinkActive="active">
+                <i class="fas fa-receipt"></i>
+                <span>Money Tracker</span>
+            </a>
+        </li>
+
+        <!-- Tax Calculations -->
+        <!-- <li>
+            <a routerLink="/demo3" routerLinkActive="active">
+                <i class="fas fa-calculator"></i>
+                <span>Tax Calculator</span>
+            </a>
+        </li>
+
+        <li>
+            <a routerLink="/transactions" routerLinkActive="active">
+                <i class="fas fa-chart-line"></i>
+                <span>Reports</span>
+            </a>
+        </li>
+
+        <li>
+            <a routerLink="/chart" routerLinkActive="active">
+                <i class="fas fa-file-alt"></i>
+                <span>Tax Filing</span>
+            </a>
+        </li> -->
+
+        <!-- Reminders / Alerts -->
+        <li>
+            <a routerLink="/reminders" routerLinkActive="active">
+                <i class="fas fa-bell"></i>
+                <span>Reminders</span>
+            </a>
+        </li>
+
+        <!-- Settings -->
+        <li>
+            <a routerLink="/contact-list" routerLinkActive="active">
+                <i class="fas fa-cog"></i>
+                <span>My Contacts</span>
+            </a>
+        </li>
+
+        <!-- Logout -->
+        <li>
+            <a routerLink="/logout" routerLinkActive="active">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Logout</span>
+            </a>
+        </li>
+    </ul>
+</div>
+
+<!-- <div class="sidebar" [class.collapsed]="collapsed" [class.open]="open">
+    <ul>
+        <li>
+            <a routerLink="/dashboard" routerLinkActive="active">
+                <i class="fas fa-home"></i><span>Dashboard</span>
+            </a>
+        </li>
+<li>
+    <a routerLink="/logout" routerLinkActive="active">
+        <i class="fas fa-sign-out-alt"></i><span>Logout</span>
+    </a>
+</li>
+</ul>
+</div> -->

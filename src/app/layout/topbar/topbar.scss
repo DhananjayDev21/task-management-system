@@ -1,0 +1,132 @@
+.topbar {
+    display: flex;
+    justify-content: space-between;
+    /* left + right */
+    align-items: center;
+    /* vertical center */
+    height: 60px;
+    padding: 0 1.3rem;
+    background: #000;
+    /* black background */
+    color: #fff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    position: relative;
+    /* needed for mobile centering */
+}
+
+/* Left cluster: menu + title (desktop flow) */
+.topbar-left {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+
+    .menu-btn {
+        background: none;
+        border: none;
+        color: #fff;
+        font-size: 1.5rem;
+        /* good tap size */
+        line-height: 1;
+        cursor: pointer;
+        padding: 0;
+        /* keep compact */
+    }
+
+    .title {
+        font-size: 1.2rem;
+        font-weight: 600;
+        letter-spacing: 0.3px;
+        white-space: nowrap;
+    }
+}
+
+/* Right cluster: profile */
+.topbar-right {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+
+    .user-profile {
+        position: relative;
+        font-size: 1.5rem;
+        cursor: pointer;
+
+        i {
+            color: #fff;
+            font-size: 1.5rem;
+            line-height: 1;
+        }
+
+        .dropdown {
+            position: absolute;
+            top: 50px;
+            right: 0;
+            background: #fff;
+            color: #333;
+            border-radius: 6px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+            display: none;
+            flex-direction: column;
+            min-width: 140px;
+            z-index: 200;
+            overflow: hidden;
+
+            a {
+                padding: 10px 14px;
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                font-size: 0.95rem;
+                text-decoration: none;
+                color: inherit;
+
+                i {
+                    font-size: 1rem;
+                }
+            }
+        }
+
+        &.open .dropdown {
+            display: flex;
+        }
+    }
+}
+
+/* ---------- Responsive: center the title on mobile ---------- */
+@media (max-width: 768px) {
+
+    /* Keep left & right in their places */
+    .topbar-left {
+        gap: 0.5rem;
+    }
+
+    .topbar-left .menu-btn {
+        font-size: 1.4rem;
+    }
+
+    /* Center the same title element relative to the whole bar */
+    .topbar .title {
+        position: absolute;
+        /* remove from left flow */
+        left: 50%;
+        transform: translateX(-50%);
+        margin: 0;
+        font-size: 1.2rem;
+        max-width: 60vw;
+        /* prevent overlap with icons */
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        pointer-events: none;
+        /* avoid accidental taps */
+    }
+
+    .topbar-right .user-profile {
+        font-size: 1.4rem;
+    }
+
+    .topbar-right .dropdown a {
+        font-size: 0.85rem;
+        padding: 8px 12px;
+    }
+}

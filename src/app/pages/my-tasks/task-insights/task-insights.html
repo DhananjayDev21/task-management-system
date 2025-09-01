@@ -1,0 +1,53 @@
+<div class="main-container">
+    <!-- Date Range Selector -->
+    <div class="date-range-container">
+        <h3>Select Date Range</h3>
+
+        <div class="date-range-explanation mt-2" *ngIf="startDate || endDate">
+            <span *ngIf="isDefaultFilter">
+                🕒 Default: Showing tasks from last 7 days
+            </span>
+            <span *ngIf="!isDefaultFilter">
+                Filtering tasks from
+                <strong *ngIf="startDate">{{ startDate | date }}</strong>
+                <strong *ngIf="startDate && endDate"> to </strong>
+                <strong *ngIf="endDate">{{ endDate | date }}</strong>
+            </span>
+        </div>
+        <div class="form-group">
+            <label>Start Date</label>
+            <input type="date" [(ngModel)]="startDate" />
+        </div>
+
+        <div class="form-group">
+            <label>End Date</label>
+            <input type="date" [(ngModel)]="endDate" />
+        </div>
+
+        <div class="actions">
+            <button class="reset" (click)="resetRange()">Reset</button>
+            <button class="apply" (click)="applyRange()">Apply</button>
+        </div>
+
+    </div>
+
+
+
+    <!-- Chart Insights -->
+    <div class="insights-container" [class.empty]="!donutChartOptions.series?.length">
+        @if (donutChartOptions.series?.length) {
+        <apx-chart #chart [series]="donutChartOptions.series!" [chart]="donutChartOptions.chart!"
+            [labels]="donutChartOptions.labels!" [responsive]="donutChartOptions.responsive!"
+            [legend]="donutChartOptions.legend!" [dataLabels]="donutChartOptions.dataLabels!"
+            [plotOptions]="donutChartOptions.plotOptions!" [title]="donutChartOptions.title!">
+        </apx-chart>
+        }
+    </div>
+
+
+</div>
+
+<!-- Task Analytics Component -->
+<div class="task-analytics-container">
+    <app-task-analytics></app-task-analytics>
+</div>
