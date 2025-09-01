@@ -1,0 +1,11 @@
+[build]
+  # Folder to publish
+  publish = "dist/task-management-system"
+  # Command to build your Angular app
+  command = "ng build --configuration production"
+
+# Redirect all routes to index.html so Angular routing works
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
