@@ -1,6 +1,6 @@
 [build]
-  publish = "dist/task-management-system"
   command = "ng build --configuration production"
+  publish = "dist/task-management-system/browser"
 
 [[redirects]]
   from = "/*"
