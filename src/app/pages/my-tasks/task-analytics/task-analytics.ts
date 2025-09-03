@@ -109,6 +109,7 @@ export class TaskAnalytics implements OnInit {
 
   onFilterChange(): void {
     this.hasUnappliedChanges = true;
+    this.cdr.markForCheck();
   }
 
   applyFilters(): void {

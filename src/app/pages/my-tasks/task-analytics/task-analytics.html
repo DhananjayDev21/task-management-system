@@ -33,7 +33,7 @@
                     <div class="search-container">
                         <span class="search-icon"><i class="fas fa-search" aria-hidden="true"></i></span>
                         <input id="searchText" type="text" class="filter-input search-input"
-                            [(ngModel)]="filters.searchText" name="searchText" (ngModelChange)="onFilterChange()"
+                            [(ngModel)]="filters.searchText" name="searchText" (change)="onFilterChange()"
                             placeholder="Search tasks..." autocomplete="off" aria-describedby="searchText" />
                     </div>
                 </div>
@@ -42,8 +42,8 @@
                 <div class="filter-group">
                     <label for="status" class="filter-label">Status</label>
                     <div class="select-container">
-                        <select id="status" [(ngModel)]="filters.status" name="status"
-                            (ngModelChange)="onFilterChange()" class="filter-select" aria-describedby="status">
+                        <select id="status" [(ngModel)]="filters.status" name="status" (change)="onFilterChange()"
+                            class="filter-select" aria-describedby="status">
                             <option value="">All Statuses</option>
                             @for (status of statusOptions; track status) {
                             <option [value]="status">{{ status | titlecase }}</option>
@@ -57,8 +57,8 @@
                 <div class="filter-group">
                     <label for="priority" class="filter-label">Priority</label>
                     <div class="select-container">
-                        <select id="priority" [(ngModel)]="filters.priority" name="priority"
-                            (ngModelChange)="onFilterChange()" class="filter-select" aria-describedby="priority">
+                        <select id="priority" [(ngModel)]="filters.priority" name="priority" (change)="onFilterChange()"
+                            class="filter-select" aria-describedby="priority">
                             <option value="">All Priorities</option>
                             @for (priority of priorityOptions; track priority) {
                             <option [value]="priority">{{ priority | titlecase }}</option>
@@ -72,8 +72,8 @@
                 <div class="filter-group">
                     <label for="category" class="filter-label">Category</label>
                     <div class="select-container">
-                        <select id="category" [(ngModel)]="filters.category" name="category"
-                            (ngModelChange)="onFilterChange()" class="filter-select" aria-describedby="category">
+                        <select id="category" [(ngModel)]="filters.category" name="category" (change)="onFilterChange()"
+                            class="filter-select" aria-describedby="category">
                             <option value="">All Categories</option>
                             @for (category of categoryOptions; track category) {
                             <option [value]="category">{{ category | titlecase }}</option>
