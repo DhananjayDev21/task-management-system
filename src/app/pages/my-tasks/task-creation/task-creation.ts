@@ -1,4 +1,4 @@
-import { Component, Inject, ViewChild } from '@angular/core';
+import { Component, Inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators, FormArray } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
@@ -6,15 +6,14 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
-import { MatDatepicker, MatDatepickerModule } from '@angular/material/datepicker';
-import { MatNativeDateModule, provideNativeDateAdapter } from '@angular/material/core';
-import { MatChipInputEvent, MatChipsModule } from '@angular/material/chips';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { provideNativeDateAdapter } from '@angular/material/core';
+import { MatChipsModule } from '@angular/material/chips';
 import { MatDividerModule } from '@angular/material/divider';
-import { Tasks } from '../../../services/tasks';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { Tasks } from '../../../services/tasks';
 import { Task } from '../../../models/model';
-
-
+import { LoaderService } from '../../../services/loader';
 
 @Component({
   selector: 'app-task-creation',
@@ -30,43 +29,30 @@ import { Task } from '../../../models/model';
     MatDatepickerModule,
     MatChipsModule,
     MatDividerModule
-
   ],
   providers: [provideNativeDateAdapter()],
   templateUrl: './task-creation.html',
   styleUrls: ['./task-creation.scss']
 })
-
 export class TaskCreation {
   taskForm: FormGroup;
-  statuses = ['pending', 'in-progress', 'completed', 'on-hold'];
-  priorities = ['low', 'medium', 'high'];
-  categories = [
-    'Development',
-    'Database',
-    'Testing',
-    'Performance',
-    'Security',
-    'Documentation',
-    'Process',
-    'Frontend',
-    'Bugfix',
-    'Design',
-    'Maintenance',
-    'Release',
-    'Presentation',
-    'Compliance',
-    'DevOps',
-    'Feature',
-    'Analytics',
-    'Work'
-  ];
-  tags: FormArray;   // <-- define tags as a property
+  readonly statuses = ['pending', 'in-progress', 'completed', 'on-hold'] as const;
+  readonly priorities = ['low', 'medium', 'high'] as const;
+  readonly categories = [
+    'Development', 'Database', 'Testing', 'Performance', 'Security', 'Documentation', 'Process',
+    'Frontend', 'Bugfix', 'Design', 'Maintenance', 'Release', 'Presentation', 'Compliance',
+    'DevOps', 'Feature', 'Analytics', 'Work'
+  ] as const;
+
+  get tags(): FormArray {
+    return this.taskForm.get('tags') as FormArray;
+  }
 
   constructor(
     private fb: FormBuilder,
     private dialogRef: MatDialogRef<TaskCreation>,
-    private taksService: Tasks,
+    private taskService: Tasks,
+    private loader: LoaderService,
     private snackBar: MatSnackBar,
     @Inject(MAT_DIALOG_DATA) public data?: Task
   ) {
@@ -80,90 +66,84 @@ export class TaskCreation {
       dueDate: ['', Validators.required],
       dueTime: ['', Validators.required],
       category: ['', Validators.required],
-      tags: this.fb.array([]),   // still part of form
+      tags: this.fb.array([]),
       createdBy: ['Dhananjay'],
       createdAt: [new Date().toISOString()],
       updatedAt: [new Date().toISOString()]
     });
 
-    // assign FormArray to property once
-    this.tags = this.taskForm.get('tags') as FormArray;
-
     if (data) {
-
-      this.taskForm.patchValue({
-        ...data,
-        startDate: new Date(data.startDate), // convert string back to Date
-        dueDate: new Date(data.dueDate),
-        category: data.category   // 👈 explicitly set category
-      });
-
-
-      // clear old tags first (to avoid duplicates)
-      this.tags.clear();
-
-      if (data.tags?.length) {
-        data.tags.forEach(tag => this.tags.push(this.fb.control(tag)));
-      }
+      // this.loader.show();
+      this.patchFormData(data);
     }
-
   }
 
-  addTag(tagInput: HTMLInputElement) {
-    const value = tagInput.value.trim();
+  private patchFormData(task: Task): void {
+    this.loader.show();
+    this.taskForm.patchValue({
+      ...task,
+      startDate: new Date(task.startDate),
+      dueDate: new Date(task.dueDate),
+      category: task.category
+    });
+
+    this.tags.clear();
+    task.tags?.forEach(tag => this.tags.push(this.fb.control(tag)));
+    this.loader.hide();
+  }
+
+  addTag(input: HTMLInputElement): void {
+    const value = input.value.trim();
     if (value) this.tags.push(this.fb.control(value));
-    tagInput.value = '';
+    input.value = '';
   }
 
-  removeTag(index: number) {
+  removeTag(index: number): void {
     this.tags.removeAt(index);
   }
 
-  submitTask() {
-    if (this.taskForm.valid) {
-      const task = { ...this.taskForm.value };
-
-      // format dates back to yyyy-mm-dd
-      task.startDate = new Date(task.startDate).toLocaleDateString('en-CA');
-      task.dueDate = new Date(task.dueDate).toLocaleDateString('en-CA');
-
-      // always refresh updatedAt
-      task.updatedAt = new Date().toISOString();
-
-      // Create or Update (inside TaskCreation)
-      if (this.data?.id) {
-        this.taksService.updateTask(this.data.id, task).subscribe({
-          next: res => {
-            this.snackBar.open('Task updated successfully ✅', 'Close', { duration: 3000 });
-            this.dialogRef.close(res);
-          },
-          error: err => {
-            this.snackBar.open('Failed to update task ❌', 'Close', { duration: 3000 });
-            console.error(err);
-          }
-        });
-      } else {
-        this.taksService.createTask(task).subscribe({
-          next: res => {
-            this.snackBar.open('Task created successfully ✅', 'Close', { duration: 3000 });
-            this.dialogRef.close(res);
-          },
-          error: err => {
-            this.snackBar.open('Failed to create task ❌', 'Close', { duration: 3000 });
-            console.error(err);
-          }
-        });
-      }
-
-    } else {
-      console.warn('⚠️ Task form is invalid', this.taskForm.value);
-    }
+  private formatDate(date: Date | string): string {
+    return new Date(date).toLocaleDateString('en-CA');
   }
 
+  submitTask(): void {
+    this.loader.show();
+
+    if (!this.taskForm.valid) {
+      console.warn('⚠️ Task form is invalid', this.taskForm.value);
+      return;
+    }
+
+    const task: Task = {
+      ...this.taskForm.value,
+      startDate: this.formatDate(this.taskForm.value.startDate),
+      dueDate: this.formatDate(this.taskForm.value.dueDate),
+      updatedAt: new Date().toISOString()
+    };
+
+    const action$ = this.data?.id
+      ? this.taskService.updateTask(this.data.id, task)
+      : this.taskService.createTask(task);
+
+    action$.subscribe({
+      next: res => {
+        this.dialogRef.close(res);
+        const message = this.data?.id ? 'Task updated successfully' : 'Task created successfully';
+        this.snackBar.open(message, 'Close', { duration: 3000 });
+        this.loader.hide();
+      },
+      error: err => {
+        const message = this.data?.id ? 'Failed to update task' : 'Failed to create task';
+        this.snackBar.open(message, 'Close', { duration: 3000 });
+        console.error(err);
+        this.loader.hide();
+      }
+    });
 
 
-  closeDialog() {
+  }
+
+  closeDialog(): void {
     this.dialogRef.close();
   }
 }
-

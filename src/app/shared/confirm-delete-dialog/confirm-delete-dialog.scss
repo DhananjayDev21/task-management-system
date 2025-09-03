@@ -1,0 +1,114 @@
+.confirm-dialog {
+    background-color: #f9fafb;
+    border-radius: 12px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+    max-width: 360px;
+    width: 100%;
+    padding: 16px;
+    /* Uniform padding for the dialog */
+    font-family: 'Inter', sans-serif;
+
+    .confirm-header {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin: 16px 0;
+        /* Equal margin top and bottom */
+        padding: 0 8px;
+        /* Equal padding for consistent spacing */
+
+        .warn-icon {
+            color: #e63946;
+            font-size: 24px;
+            width: 24px;
+            height: 24px;
+            margin: 0;
+            /* No additional margins to maintain alignment */
+        }
+
+        h2 {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1f2a44;
+            margin: 0;
+            /* Remove default margins for consistency */
+            line-height: 24px;
+            /* Align with icon height */
+        }
+    }
+
+    mat-dialog-content {
+        font-size: 14px;
+        color: #4b5e7a;
+        line-height: 1.4;
+        margin: 16px 0;
+        /* Equal margin top and bottom */
+        padding: 0 8px;
+        /* Equal padding for consistent spacing */
+
+        p {
+            margin: 0;
+            /* Remove default margins */
+            padding: 0;
+            /* Ensure no extra padding */
+
+            strong {
+                font-weight: 700;
+                color: #1f2a44;
+            }
+
+            span {
+                color: #6b7280;
+            }
+        }
+    }
+
+    mat-divider {
+        margin: 16px 0;
+        /* Equal margin top and bottom */
+        border-color: #e5e7eb;
+    }
+
+    mat-dialog-actions {
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        gap: 8px;
+        margin: 16px 0;
+        /* Equal margin top and bottom */
+        padding: 0 8px;
+        /* Equal padding for consistent spacing */
+
+        button {
+            padding: 8px 16px;
+            /* Uniform padding for buttons */
+            margin: 0;
+            /* Remove default margins */
+            font-size: 13px;
+            font-weight: 500;
+            border-radius: 6px;
+            transition: all 0.2s ease;
+            border: none;
+
+            &[mat-stroked-button] {
+                border: 1px solid #d1d5db;
+                color: #4b5e7a;
+                background-color: transparent;
+
+                &:hover {
+                    background-color: #e5e7eb;
+                    border-color: #9ca3af;
+                }
+            }
+
+            &[mat-raised-button][color="warn"] {
+                background-color: #e63946;
+                color: #ffffff;
+
+                &:hover {
+                    background-color: #c81e2b;
+                }
+            }
+        }
+    }
+}

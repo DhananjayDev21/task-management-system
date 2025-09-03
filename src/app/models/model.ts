@@ -5,15 +5,16 @@ export interface Task {
     description: string;
     status: string,
     priority: string,
-    startDate: string;
+    startDate: string,
+    startTime: string,
     dueDate: string;
+    dueTime: string;
     createdBy: string;
     category: string;
     tags: string[];
     createdAt: string;
     updatedAt: string;
     isOverDue: boolean;
-    dueTime: string;
 }
 
 //note model

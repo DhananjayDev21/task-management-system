@@ -1,21 +1,23 @@
+<!-- Main content -->
 <mat-tab-group>
+
     <!-- Tab 1: Tasks -->
     <mat-tab label="Tasks">
 
+        <!-- Create Task Box -->
         <div class="task-container">
-            <!-- Create Task -->
             <div class="create-task-box" (click)="openTaskCreation()">
                 <span class="plus-icon">+</span>
                 <p>Create Task</p>
             </div>
         </div>
-
         <hr />
 
-
+        <!-- Task Accordion -->
         <mat-accordion multi="true" class="task-accordion">
             @for (group of groupedTasks; track group.label) {
             <mat-expansion-panel [expanded]="group.label === 'Today'">
+
                 <mat-expansion-panel-header>
                     <mat-panel-title>
                         {{ group.label === 'Today' || group.label === 'Yesterday' || group.label === 'Tomorrow'
@@ -27,7 +29,7 @@
                     </mat-panel-description>
                 </mat-expansion-panel-header>
 
-                <!-- Filter bar -->
+                <!-- Filter Bar -->
                 <div class="filter-bar">
                     @for (filter of group.filters; track filter.name) {
                     <span (click)="setFilter(group, filter.name)" [class.active]="group.activeFilter === filter.name"
@@ -37,11 +39,11 @@
                     }
                 </div>
 
-
-                <!-- Task list -->
+                <!-- Task List -->
                 <div class="task-list">
                     @for (task of group.filteredTasks; track task.id) {
                     <div class="task-card {{task.status}}">
+
                         <div class="task-header">
                             <h3>{{ task.title }}</h3>
                             <span class="priority {{task.priority}}">
@@ -62,7 +64,6 @@
                                 <b>Due:</b>
                                 {{ (task.dueDate + 'T' + task.dueTime) | date:'EEE, MMM d, y, hh:mm a' }}
                             </p>
-
                         </div>
 
                         <div class="task-tags">
@@ -70,11 +71,14 @@
                             <span class="tag">{{ tag }}</span>
                             }
                         </div>
+
                         <hr>
+
                         <div class="task-actions">
                             <button class="edit-btn" (click)="editTask(task)">Edit</button>
                             <button class="delete-btn" (click)="deleteTask(task.id)">Delete</button>
                         </div>
+
                     </div>
                     }
                 </div>
@@ -82,6 +86,7 @@
             </mat-expansion-panel>
             }
         </mat-accordion>
+
     </mat-tab>
 
     <!-- Tab 2: Insights -->
@@ -90,6 +95,5 @@
             <app-task-insights></app-task-insights>
         </ng-template>
     </mat-tab>
-
 
 </mat-tab-group>

@@ -16,15 +16,18 @@
                 <span class="filter-count" aria-live="polite">{{ activeFilterCount }} active</span>
             </div>
             <div class="quick-actions">
-                <div class="filter-notice" *ngIf="hasUnappliedChanges" role="alert">
+                @if (hasUnappliedChanges) {
+                <div class="filter-notice" role="alert">
                     <span class="notice-icon"><i class="fas fa-exclamation-triangle" aria-hidden="true"></i></span>
                     <span class="notice-text">Unapplied changes</span>
                 </div>
+                }
             </div>
         </div>
 
         <form class="filters-grid" (ngSubmit)="applyFilters()" aria-label="Task filters">
             <div class="filter-row">
+                <!-- Search -->
                 <div class="filter-group">
                     <label for="searchText" class="filter-label">Search</label>
                     <div class="search-container">
@@ -35,43 +38,46 @@
                     </div>
                 </div>
 
+                <!-- Status -->
                 <div class="filter-group">
                     <label for="status" class="filter-label">Status</label>
                     <div class="select-container">
                         <select id="status" [(ngModel)]="filters.status" name="status"
                             (ngModelChange)="onFilterChange()" class="filter-select" aria-describedby="status">
                             <option value="">All Statuses</option>
-                            <option *ngFor="let status of statusOptions" [value]="status">
-                                {{ status | titlecase }}
-                            </option>
+                            @for (status of statusOptions; track status) {
+                            <option [value]="status">{{ status | titlecase }}</option>
+                            }
                         </select>
                         <span class="dropdown-arrow"><i class="fas fa-chevron-down" aria-hidden="true"></i></span>
                     </div>
                 </div>
 
+                <!-- Priority -->
                 <div class="filter-group">
                     <label for="priority" class="filter-label">Priority</label>
                     <div class="select-container">
                         <select id="priority" [(ngModel)]="filters.priority" name="priority"
                             (ngModelChange)="onFilterChange()" class="filter-select" aria-describedby="priority">
                             <option value="">All Priorities</option>
-                            <option *ngFor="let priority of priorityOptions" [value]="priority">
-                                {{ priority | titlecase }}
-                            </option>
+                            @for (priority of priorityOptions; track priority) {
+                            <option [value]="priority">{{ priority | titlecase }}</option>
+                            }
                         </select>
                         <span class="dropdown-arrow"><i class="fas fa-chevron-down" aria-hidden="true"></i></span>
                     </div>
                 </div>
 
+                <!-- Category -->
                 <div class="filter-group">
                     <label for="category" class="filter-label">Category</label>
                     <div class="select-container">
                         <select id="category" [(ngModel)]="filters.category" name="category"
                             (ngModelChange)="onFilterChange()" class="filter-select" aria-describedby="category">
                             <option value="">All Categories</option>
-                            <option *ngFor="let category of categoryOptions" [value]="category">
-                                {{ category | titlecase }}
-                            </option>
+                            @for (category of categoryOptions; track category) {
+                            <option [value]="category">{{ category | titlecase }}</option>
+                            }
                         </select>
                         <span class="dropdown-arrow"><i class="fas fa-chevron-down" aria-hidden="true"></i></span>
                     </div>
@@ -79,26 +85,30 @@
             </div>
 
             <div class="filter-row">
+                <!-- Start Date -->
                 <div class="filter-group">
                     <label for="startDate" class="filter-label">Start Date From</label>
                     <input id="startDate" type="date" class="filter-input" [(ngModel)]="filters.startDateFrom"
-                        name="startDate" (ngModelChange)="onFilterChange()" aria-describedby="startDate" />
+                        name="startDate" (change)="onFilterChange()" aria-describedby="startDate" />
                 </div>
 
+                <!-- End Date -->
                 <div class="filter-group">
                     <label for="endDate" class="filter-label">End Date To</label>
                     <input id="endDate" type="date" class="filter-input" [(ngModel)]="filters.endDateTo" name="endDate"
-                        (ngModelChange)="onFilterChange()" aria-describedby="endDate" />
+                        (change)="onFilterChange()" aria-describedby="endDate" />
                 </div>
 
+                <!-- Overdue -->
                 <div class="filter-group">
                     <label class="filter-label checkbox-label">
                         <input type="checkbox" [(ngModel)]="filters.overdueOnly" name="overdueOnly"
-                            (ngModelChange)="onFilterChange()" aria-describedby="overdueOnly" />
+                            (change)="onFilterChange()" aria-describedby="overdueOnly" />
                         <span class="checkbox-text">Overdue Only</span>
                     </label>
                 </div>
 
+                <!-- Actions -->
                 <div class="filter-actions">
                     <button type="submit" class="apply-btn">
                         <span class="btn-icon"><i class="fas fa-search" aria-hidden="true"></i></span>
@@ -112,45 +122,68 @@
             </div>
         </form>
 
-        <div class="date-range-explanation" *ngIf="filters.startDateFrom || filters.endDateTo" role="status">
-            <span *ngIf="isDefaultFilter">
-                <i class="fas fa-clock" aria-hidden="true"></i> Default: Showing tasks from last 7 days
-            </span>
-            <span *ngIf="!isDefaultFilter">
+        <!-- Date Range Notice -->
+        @if (filters.startDateFrom || filters.endDateTo) {
+        <div class="date-range-explanation" role="status">
+            @if (isDefaultFilter) {
+            <span><i class="fas fa-clock" aria-hidden="true"></i> <b> Default</b> : Showing tasks from last 7
+                days</span>
+            } @else {
+            <span>
                 Filtering tasks from
-                <strong *ngIf="filters.startDateFrom">{{ filters.startDateFrom | date }}</strong>
-                <strong *ngIf="filters.startDateFrom && filters.endDateTo"> to </strong>
-                <strong *ngIf="filters.endDateTo">{{ filters.endDateTo | date }}</strong>
+                @if (filters.startDateFrom) {
+                <strong>{{ filters.startDateFrom | date }}</strong>
+                }
+                @if (filters.startDateFrom && filters.endDateTo) { <strong> to </strong> }
+                @if (filters.endDateTo) {
+                <strong>{{ filters.endDateTo | date }}</strong>
+                }
             </span>
+            }
         </div>
+        }
     </div>
 
     <div class="results-section" aria-label="Task results">
-        <div class="stats-bar" *ngIf="filteredData.length > 0" role="region" aria-label="Task statistics">
+        <!-- Stats -->
+        @if (filteredData.length > 0) {
+        <div class="stats-bar" role="region" aria-label="Task statistics">
             <div class="stats-item total">
                 <span class="count">{{ counts.total }}</span>
                 <span class="label">Total Tasks</span>
             </div>
-            <div class="stats-item pending" *ngIf="counts.pending">
+            @if (counts.pending) {
+            <div class="stats-item pending">
                 <span class="count">{{ counts.pending }}</span>
                 <span class="label">Pending</span>
             </div>
-            <div class="stats-item in-progress" *ngIf="counts['in-progress']">
+            }
+            @if (counts['in-progress']) {
+            <div class="stats-item in-progress">
                 <span class="count">{{ counts['in-progress'] }}</span>
                 <span class="label">In Progress</span>
             </div>
-            <div class="stats-item on-hold" *ngIf="counts['on-hold']">
+            }
+            @if (counts['on-hold']) {
+            <div class="stats-item on-hold">
                 <span class="count">{{ counts['on-hold'] }}</span>
                 <span class="label">On Hold</span>
             </div>
-            <div class="stats-item completed" *ngIf="counts['completed']">
+            }
+            @if (counts['completed']) {
+            <div class="stats-item completed">
                 <span class="count">{{ counts['completed'] }}</span>
                 <span class="label">Completed</span>
             </div>
+            }
         </div>
+        }
 
-        <div class="tasks-grid" *ngIf="filteredData.length" role="grid" aria-label="Task list">
-            <div *ngFor="let task of filteredData; trackBy: trackByTaskId" class="task-card">
+        <!-- Tasks -->
+        @if (filteredData.length) {
+        <div class="tasks-grid" role="grid" aria-label="Task list">
+            @for (task of filteredData; track trackByTaskId($index, task)) {
+            <div class="task-card">
                 <div class="task-card-header">
                     <h3>{{ task.title }}</h3>
                     <span class="task-id">#{{ task.id }}</span>
@@ -160,7 +193,9 @@
                     <span class="priority {{ task.priority | lowercase }}">
                         {{ task.priority | titlecase }}
                     </span>
-                    <span *ngIf="task.isOverDue" class="overdue">Overdue</span>
+                    @if (task.isOverDue) {
+                    <span class="overdue">Overdue</span>
+                    }
                 </div>
                 <p>{{ task.description }}</p>
                 <div class="task-details">
@@ -169,14 +204,20 @@
                     <span>Category: {{ task.category | titlecase }}</span>
                     <span>by {{ task.createdBy }}</span>
                 </div>
-                <div class="task-tags" *ngIf="task.tags?.length">
-                    <span *ngFor="let tag of task.tags">{{ tag }}</span>
+                @if (task.tags.length) {
+                <div class="task-tags">
+                    @for (tag of task.tags; track tag) {
+                    <span>{{ tag }}</span>
+                    }
                 </div>
+                }
             </div>
+            }
         </div>
-
-        <div class="no-results" *ngIf="!filteredData.length" role="alert">
+        } @else {
+        <div class="no-results" role="alert">
             <h2>No tasks found</h2>
         </div>
+        }
     </div>
 </div>

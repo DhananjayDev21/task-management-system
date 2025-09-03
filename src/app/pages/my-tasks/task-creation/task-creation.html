@@ -62,13 +62,14 @@
 
         <label>Tags</label>
         <div class="tags-container">
-            <div class="tag" *ngFor="let tag of tags.controls; let i = index">
-                {{ tag.value }} <span (click)="removeTag(i)">×</span>
+            @for (tag of tags.controls; track $index) {
+            <div class="tag">
+                {{ tag.value }} <span (click)="removeTag($index)">×</span>
             </div>
+            }
             <input #tagInput type="text" placeholder="Add tag"
                 (keydown.enter)="addTag(tagInput); $event.preventDefault()" />
         </div>
-
     </form>
 </mat-dialog-content>
 

@@ -1,4 +1,4 @@
-import { Component, ViewChild, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, ViewChild, OnInit, OnDestroy, ChangeDetectionStrategy } from '@angular/core';
 import { NgApexchartsModule, ChartComponent } from 'ng-apexcharts';
 import {
   ApexChart,
@@ -22,6 +22,11 @@ import { MatSelectModule } from '@angular/material/select';
 import { provideNativeDateAdapter } from '@angular/material/core';
 import { Tasks } from '../../../services/tasks';
 import { TaskAnalytics } from '../task-analytics/task-analytics';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
+import { Task } from '../../../models/model';
+import { LoaderService } from '../../../services/loader';
+
 
 export type ChartOptions = {
   series: ApexNonAxisChartSeries;
@@ -41,6 +46,7 @@ export type ChartOptions = {
     NgApexchartsModule,
     CommonModule,
     ReactiveFormsModule,
+    FormsModule,
     MatDialogModule,
     MatFormFieldModule,
     MatInputModule,
@@ -49,60 +55,70 @@ export type ChartOptions = {
     MatDatepickerModule,
     MatChipsModule,
     MatDividerModule,
-    FormsModule,
     TaskAnalytics
   ],
   templateUrl: './task-insights.html',
-  styleUrl: './task-insights.scss',
+  styleUrls: ['./task-insights.scss'],
   providers: [provideNativeDateAdapter()],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class TaskInsights implements OnInit {
-  @ViewChild("chart") chart!: ChartComponent;
+export class TaskInsights implements OnInit, OnDestroy {
+  @ViewChild('chart') chart!: ChartComponent;
 
   public donutChartOptions: Partial<ChartOptions> = {};
   selectedDate = new FormControl(new Date());
 
-  tasks: any[] = [];
-  statuses = ['pending', 'in-progress', 'completed', 'on-hold'];
+  tasks: Task[] = [];
+  statuses: Task['status'][] = ['pending', 'in-progress', 'completed', 'on-hold'];
 
-  startDate: any;
-  endDate: any;
-  isDefaultFilter: boolean = false;
+  startDate!: string;
+  endDate!: string;
+  isDefaultFilter = false;
+
+  private destroy$ = new Subject<void>();
 
   constructor(private taskService: Tasks) { }
 
-  ngOnInit() {
-    // Set default last 7 days
+  ngOnInit(): void {
+    this.setDefaultRange();
+    this.getTasks();
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
+  setDefaultRange(): void {
+    const { start, end } = this.getLast7Days();
+    this.startDate = start;
+    this.endDate = end;
+  }
+
+  getLast7Days(): { start: string; end: string } {
     const today = new Date();
     const sevenDaysAgo = new Date();
     sevenDaysAgo.setDate(today.getDate() - 6);
 
-    this.startDate = sevenDaysAgo.toISOString().split('T')[0];
-    this.endDate = today.toISOString().split('T')[0];
-
-    this.getTasks();
+    return {
+      start: sevenDaysAgo.toISOString().split('T')[0],
+      end: today.toISOString().split('T')[0],
+    };
   }
 
-
-  getTasks() {
-    this.taskService.getTasks().subscribe({
-      next: (res: any[]) => {
-        this.tasks = res;
-
-        // Show default last 7 days chart
-        if (this.startDate && this.endDate) {
+  getTasks(): void {
+    this.taskService.getTasks()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (res: Task[]) => {
+          this.tasks = res;
           this.updateChartForDateRange(this.startDate, this.endDate);
-        }
-
-      },
-      error: (err: any) => {
-        console.error('Error fetching tasks:', err);
-      }
-    });
+        },
+        error: (err) => console.error('Error fetching tasks:', err),
+      });
   }
 
-  // Filter tasks by date range and rebuild chart
-  updateChartForDateRange(startDate: string, endDate: string) {
+  updateChartForDateRange(startDate: string, endDate: string): void {
     const start = new Date(startDate);
     const end = new Date(endDate);
 
@@ -111,55 +127,30 @@ export class TaskInsights implements OnInit {
       return taskDate >= start && taskDate <= end;
     });
 
-
-    // Determine if default filter (last 7 days)
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-
-    const sevenDaysAgo = new Date();
-    sevenDaysAgo.setDate(today.getDate() - 6);
-    sevenDaysAgo.setHours(0, 0, 0, 0);
-
-    const start1 = new Date(this.startDate);
-    start.setHours(0, 0, 0, 0);
-    const end1 = new Date(this.endDate);
-    end.setHours(0, 0, 0, 0);
-
-    // Check if default last-7-days filter is applied
-    this.isDefaultFilter =
-      start.getTime() === sevenDaysAgo.getTime() &&
-      end.getTime() === today.getTime();
-
+    const { start: defaultStart, end: defaultEnd } = this.getLast7Days();
+    this.isDefaultFilter = startDate === defaultStart && endDate === defaultEnd;
 
     this.buildChartData(filteredTasks);
   }
 
-  // Build chart from tasks array
-  buildChartData(tasksParam?: any[]) {
-
-    const tasksToUse = tasksParam || this.tasks;
-
-    const statusCounts: any = {
-      'pending': 0,
+  buildChartData(tasksParam: Task[] = this.tasks): void {
+    const statusCounts: Record<Task['status'], number> = {
+      pending: 0,
       'in-progress': 0,
-      'completed': 0,
-      'on-hold': 0
+      completed: 0,
+      'on-hold': 0,
     };
 
-    for (const task of tasksToUse) {
-      statusCounts[task.status] = (statusCounts[task.status] || 0) + 1;
+    for (const task of tasksParam) {
+      statusCounts[task.status]++;
     }
 
     const labels = this.statuses;
     const series = labels.map(status => statusCounts[status]);
 
-
-
-    // If chart already exists, update series
     if (this.chart) {
       this.chart.updateSeries(series);
     } else {
-      // First-time initialization
       this.donutChartOptions = {
         series,
         chart: { type: 'donut', height: 280 },
@@ -168,10 +159,10 @@ export class TaskInsights implements OnInit {
         responsive: [
           {
             breakpoint: 480,
-            options: { chart: { width: 300 }, legend: { position: 'bottom' } }
-          }
+            options: { chart: { width: 300 }, legend: { position: 'bottom' } },
+          },
         ],
-        legend: { position: 'right', offsetY: 0 },
+        legend: { position: 'right' },
         dataLabels: { enabled: true },
         plotOptions: {
           pie: {
@@ -181,36 +172,25 @@ export class TaskInsights implements OnInit {
                 total: {
                   show: true,
                   label: 'Total Tasks',
-                  formatter: (w) => w.globals.seriesTotals.reduce((a: any, b: any) => a + b, 0).toString()
-                }
-              }
-            }
-          }
-        }
+                  formatter: (w) =>
+                    w.globals.seriesTotals.reduce((a: number, b: number) => a + b, 0).toString(),
+                },
+              },
+            },
+          },
+        },
       };
     }
   }
 
-
-  // Apply selected date range
-  applyRange() {
+  applyRange(): void {
     if (this.startDate && this.endDate) {
       this.updateChartForDateRange(this.startDate, this.endDate);
-    } else {
-      alert('Please select both start and end dates!');
     }
   }
 
-  // Reset to default last 7 days
-  resetRange() {
-    const today = new Date();
-    const sevenDaysAgo = new Date();
-    sevenDaysAgo.setDate(today.getDate() - 7);
-
-    this.startDate = sevenDaysAgo.toISOString().split('T')[0];
-    this.endDate = today.toISOString().split('T')[0];
-
+  resetRange(): void {
+    this.setDefaultRange();
     this.updateChartForDateRange(this.startDate, this.endDate);
   }
-
 }

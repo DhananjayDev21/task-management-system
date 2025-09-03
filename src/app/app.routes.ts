@@ -7,24 +7,14 @@ export const routes: Routes = [
         path: '',
         component: Shell,
         children: [
-            { path: 'my-tasks', component: MyTasks },
-            // { path: 'demo', component: Demo },
-            // { path: 'demo2', component: Demo2 },
-            // { path: 'demo3', component: Demo3 },
-            // { path: 'transactions', component: Transactions },
-            // { path: 'chart', component: TransactionDonutChart },
+            // Default route: redirect to 'my-tasks'
+            { path: '', redirectTo: 'my-tasks', pathMatch: 'full' },
 
+            // Actual route
+            { path: 'my-tasks', component: MyTasks }
+        ],
+    },
 
-
-            // { path: 'insight', component: TaskInsights },
-            // { path: 'my-notes', component: NotesList },
-            // { path: 'contact-list', component: MyContactList },
-
-            // { path: 'reminders', component: ReminderList },
-
-
-
-
-        ]
-    }
+    // Wildcard route for 404
+    { path: '**', component: MyTasks }
 ];

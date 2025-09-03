@@ -1,139 +1,77 @@
-import { ChangeDetectorRef, Component, Input, SimpleChanges } from '@angular/core';
-import { Tasks } from '../../../services/tasks';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Task } from '../../../models/model';
+import { Tasks } from '../../../services/tasks';
+
+interface TaskFilters {
+  searchText: string;
+  status: string;
+  priority: string;
+  category: string;
+  createdBy: string[];
+  tags: string[];
+  startDateFrom: string;
+  endDateTo: string;
+  overdueOnly: boolean;
+}
+
+interface TaskCounts {
+  pending: number;
+  'in-progress': number;
+  completed: number;
+  'on-hold': number;
+  high: number;
+  medium: number;
+  low: number;
+  total: number;
+}
 
 @Component({
   selector: 'app-task-analytics',
+  standalone: true,
   imports: [FormsModule, CommonModule],
   templateUrl: './task-analytics.html',
-  styleUrl: './task-analytics.scss'
+  styleUrl: './task-analytics.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class TaskAnalytics {
+export class TaskAnalytics implements OnInit {
 
-
-  constructor(private taksService: Tasks, private cdr: ChangeDetectorRef) { }
-
-  tasks: Task[] = []
-
-  filters: any = {
-    searchText: '',
-    status: '',
-    priority: '',
-    category: '',
-    createdBy: [],
-    tags: [],
-    startDateFrom: '',
-    endDateTo: '',
-    overdueOnly: false
-  };
-
+  tasks: Task[] = [];
   filteredData: Task[] = [];
-  isDefaultFilter: boolean = true;
-  hasUnappliedChanges: boolean = false;
+  counts: TaskCounts = this.initCounts();
+
+  filters: TaskFilters = this.initFilters();
+  isDefaultFilter = true;
+  hasUnappliedChanges = false;
+  activeFilterCount = 0;
 
   statusOptions: string[] = [];
   priorityOptions: string[] = [];
   categoryOptions: string[] = [];
-  activeFilterCount = 0;
+
+  constructor(private taskService: Tasks, private cdr: ChangeDetectorRef) { }
 
   ngOnInit() {
     this.getTasks();
   }
 
-  getTasks() {
-    this.taksService.getTasks().subscribe({
-      next: (res: any[]) => {
-        this.tasks = res;
-        this.tasks = res.map(t => {
-          const due = new Date(t.dueDate);
-          const isFinished = t.status === 'completed';      // adjust if needed
-          return { ...t, isOverDue: !isFinished && due < new Date() };
-        });
-
-        this.extractFilterOptions();
-        this.setDefaultLast7Days();
-        this.applyFilters();
-      },
-      error: (err: any) => {
-        console.error('Error fetching tasks:', err);
-      }
-    });
+  private initFilters(): TaskFilters {
+    return {
+      searchText: '',
+      status: '',
+      priority: '',
+      category: '',
+      createdBy: [],
+      tags: [],
+      startDateFrom: '',
+      endDateTo: '',
+      overdueOnly: false
+    };
   }
 
-  setDefaultLast7Days() {
-    const today = new Date();
-    const sevenDaysAgo = new Date();
-    sevenDaysAgo.setDate(today.getDate() - 6);
-
-    this.filters.startDateFrom = sevenDaysAgo.toLocaleDateString('en-CA'); // YYYY-MM-DD format
-    this.filters.endDateTo = today.toLocaleDateString('en-CA');
-    this.updateActiveFilterCount();
-
-  }
-
-
-  extractFilterOptions() {
-    this.statusOptions = [...new Set(this.tasks.map(t => t.status))];
-    this.priorityOptions = [...new Set(this.tasks.map(t => t.priority))];
-    this.categoryOptions = [...new Set(this.tasks.map(t => t.category))];
-  }
-
-  onFilterChange() {
-    this.hasUnappliedChanges = true;
-  }
-
-  applyFilters() {
-    this.filteredData = this.tasks.filter(task => {
-      const startDate = new Date(task.startDate);
-      const fromDate = new Date(this.filters.startDateFrom);
-      const toDate = new Date(this.filters.endDateTo);
-      const matchesDate = startDate >= fromDate && startDate <= toDate;
-
-      const matchesStatus = !this.filters.status || task.status === this.filters.status;
-      const matchesPriority = !this.filters.priority || task.priority === this.filters.priority;
-      const matchesCategory = !this.filters.category || task.category === this.filters.category;
-      const matchesText = !this.filters.searchText ||
-        task.title.toLowerCase().includes(this.filters.searchText.toLowerCase()) ||
-        task.description.toLowerCase().includes(this.filters.searchText.toLowerCase());
-      const matchesOverdue = !this.filters.overdueOnly || task.isOverDue;
-
-
-      return matchesDate && matchesStatus && matchesPriority && matchesCategory && matchesText && matchesOverdue;
-    });
-
-
-    this.hasUnappliedChanges = false;
-
-    // Determine if default filter (last 7 days)
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-
-    const sevenDaysAgo = new Date();
-    sevenDaysAgo.setDate(today.getDate() - 6);
-    sevenDaysAgo.setHours(0, 0, 0, 0);
-
-    const start = new Date(this.filters.startDateFrom);
-    start.setHours(0, 0, 0, 0);
-    const end = new Date(this.filters.endDateTo);
-    end.setHours(0, 0, 0, 0);
-
-    // Check if default last-7-days filter is applied
-    this.isDefaultFilter =
-      start.getTime() === sevenDaysAgo.getTime() &&
-      end.getTime() === today.getTime();
-
-    this.getCounts();
-    this.cdr.detectChanges();
-
-  }
-
-  counts: any = {};
-
-
-  getCounts() {
-    const newCounts: any = {
+  private initCounts(): TaskCounts {
+    return {
       pending: 0,
       'in-progress': 0,
       completed: 0,
@@ -143,50 +81,116 @@ export class TaskAnalytics {
       low: 0,
       total: 0
     };
+  }
 
-    this.filteredData.forEach((task: any) => {
-      newCounts[task.status] = (newCounts[task.status] || 0) + 1;
-      newCounts[task.priority] = (newCounts[task.priority] || 0) + 1;
-      newCounts.total++;
+  private getTasks(): void {
+    this.taskService.getTasks().subscribe({
+      next: (res: Task[]) => {
+        const now = new Date();
+        this.tasks = res.map(task => {
+          const due = new Date(task.dueDate);
+          const isFinished = task.status === 'completed';
+          return { ...task, isOverDue: !isFinished && due < now };
+        });
+
+        this.extractFilterOptions();
+        this.resetToDefault();
+        this.cdr.markForCheck();
+      },
+      error: (err) => console.error('Error fetching tasks:', err)
+    });
+  }
+
+  private extractFilterOptions(): void {
+    this.statusOptions = [...new Set(this.tasks.map(t => t.status))];
+    this.priorityOptions = [...new Set(this.tasks.map(t => t.priority))];
+    this.categoryOptions = [...new Set(this.tasks.map(t => t.category))];
+  }
+
+  onFilterChange(): void {
+    this.hasUnappliedChanges = true;
+  }
+
+  applyFilters(): void {
+    const { searchText, status, priority, category, startDateFrom, endDateTo, overdueOnly } = this.filters;
+
+    const fromDate = new Date(startDateFrom);
+    const toDate = new Date(endDateTo);
+
+    this.filteredData = this.tasks.filter(task => {
+      const start = new Date(task.startDate);
+      const matchesDate = start >= fromDate && start <= toDate;
+      const matchesStatus = !status || task.status === status;
+      const matchesPriority = !priority || task.priority === priority;
+      const matchesCategory = !category || task.category === category;
+      const matchesText = !searchText ||
+        task.title.toLowerCase().includes(searchText.toLowerCase()) ||
+        task.description.toLowerCase().includes(searchText.toLowerCase());
+      const matchesOverdue = !overdueOnly || task.isOverDue;
+
+      return matchesDate && matchesStatus && matchesPriority && matchesCategory && matchesText && matchesOverdue;
     });
 
-    this.counts = newCounts; // 🔑 assign new object (triggers UI update)
+    this.hasUnappliedChanges = false;
+    this.updateDefaultFilterFlag();
+    this.updateCounts();
+    this.updateActiveFilterCount();
+    this.cdr.markForCheck();
   }
 
+  private updateDefaultFilterFlag(): void {
+    const today = new Date(); today.setHours(0, 0, 0, 0);
+    const sevenDaysAgo = new Date(today); sevenDaysAgo.setDate(today.getDate() - 6);
 
+    const start = new Date(this.filters.startDateFrom); start.setHours(0, 0, 0, 0);
+    const end = new Date(this.filters.endDateTo); end.setHours(0, 0, 0, 0);
 
-  showAllData() {
-    this.filters = { searchText: '', status: '', priority: '', category: '', createdBy: [], tags: [], startDateFrom: '', endDateTo: '' };
-    this.setDefaultLast7Days();
-    this.applyFilters();
+    this.isDefaultFilter =
+      start.getTime() === sevenDaysAgo.getTime() &&
+      end.getTime() === today.getTime();
   }
 
-  resetToDefault() {
-    this.setDefaultLast7Days();
-    this.applyFilters();
+  private updateCounts(): void {
+    const newCounts = this.initCounts();
+    this.filteredData.forEach(task => {
+      newCounts[task.status as keyof TaskCounts] = (newCounts[task.status as keyof TaskCounts] || 0) + 1;
+      newCounts[task.priority as keyof TaskCounts] = (newCounts[task.priority as keyof TaskCounts] || 0) + 1;
+      newCounts.total++;
+    });
+    this.counts = newCounts;
   }
 
-  getTasksByStatus(status: string) {
-    return this.filteredData.filter(t => t.status === status);
-  }
-
-  updateActiveFilterCount() {
+  private updateActiveFilterCount(): void {
+    const { searchText, status, priority, category, startDateFrom, endDateTo } = this.filters;
     let count = 0;
-    if (this.filters.searchText) count++;
-    if (this.filters.status) count++;
-    if (this.filters.priority) count++;
-    if (this.filters.category) count++;
-    if (this.filters.startDateFrom || this.filters.endDateTo) count++;
+    if (searchText) count++;
+    if (status) count++;
+    if (priority) count++;
+    if (category) count++;
+    if (startDateFrom || endDateTo) count++;
     this.activeFilterCount = count;
   }
 
+  resetToDefault(): void {
+    const today = new Date();
+    const sevenDaysAgo = new Date(); sevenDaysAgo.setDate(today.getDate() - 6);
 
-  trackByTaskId(index: number, task: Task): any {
+    this.filters.startDateFrom = sevenDaysAgo.toISOString().split('T')[0];
+    this.filters.endDateTo = today.toISOString().split('T')[0];
+
+    this.applyFilters();
+  }
+
+  clearAllFilters(): void {
+    this.filters = this.initFilters();
+    this.resetToDefault();
+  }
+
+  getTasksByStatus(status: string): Task[] {
+    return this.filteredData.filter(t => t.status === status);
+  }
+
+  trackByTaskId(index: number, task: Task): number | undefined {
     return task.id;
   }
-
-  clearAllFilters() {
-    this.showAllData();  // just calls showAllData to reset all filters
-  }
-
 }

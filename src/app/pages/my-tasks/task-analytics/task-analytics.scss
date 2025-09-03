@@ -3,9 +3,10 @@
     flex-direction: column;
     gap: 28px;
     /* Vertical spacing between sections */
-    padding: 12px;
+    // padding: 12px;
     min-height: 100vh;
     background-color: #f9fafb;
+    // box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
 
     /* ---------- Header Section ---------- */
     .header-section {
@@ -13,6 +14,7 @@
         background-color: #ffffff;
         border: 1px solid #e5e7eb;
         border-radius: 10px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
 
         .header-title {
             display: flex;
@@ -29,7 +31,7 @@
 
             .header-stats {
                 .filtered-tasks {
-                    font-size: 14px;
+                    font-size: 16px;
                     font-weight: 500;
                     color: #2272e2;
                 }

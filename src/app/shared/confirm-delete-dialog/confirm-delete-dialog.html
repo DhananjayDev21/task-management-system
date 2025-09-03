@@ -1,0 +1,22 @@
+<div class="confirm-dialog">
+    <div class="confirm-header">
+        <mat-icon class="warn-icon">warning</mat-icon>
+        <h2>Confirm Delete</h2>
+    </div>
+
+    <mat-dialog-content>
+        <p>
+            Are you sure you want to delete
+            @if (data.itemName) {
+            <strong>{{ data.itemName }}</strong>
+            } @else {
+            <span>this item</span>
+            }?
+        </p>
+    </mat-dialog-content>
+    <mat-divider></mat-divider>
+    <mat-dialog-actions align="end">
+        <button mat-stroked-button (click)="onCancel()">Cancel</button>
+        <button mat-raised-button color="warn" (click)="onDelete()">Delete</button>
+    </mat-dialog-actions>
+</div>
