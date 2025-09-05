@@ -1,8 +1,14 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { Task } from '../../../models/model';
 import { Tasks } from '../../../services/tasks';
+import { MatButtonModule } from '@angular/material/button';
+import { MatChipsModule } from '@angular/material/chips';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatDividerModule } from '@angular/material/divider';
+import { MatSelectModule } from '@angular/material/select';
+import { MAT_DATE_FORMATS, MAT_DATE_LOCALE, provideNativeDateAdapter } from '@angular/material/core';
 
 interface TaskFilters {
   searchText: string;
@@ -30,10 +36,23 @@ interface TaskCounts {
 @Component({
   selector: 'app-task-analytics',
   standalone: true,
-  imports: [FormsModule, CommonModule],
+  imports: [
+    FormsModule,           // For template-driven forms
+    ReactiveFormsModule,   // For reactive forms - ADD THIS
+    CommonModule,
+    MatSelectModule,
+    MatButtonModule,
+    MatDatepickerModule,
+    MatChipsModule,
+    MatDividerModule
+  ],
   templateUrl: './task-analytics.html',
   styleUrl: './task-analytics.scss',
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  providers: [
+    provideNativeDateAdapter(),
+    { provide: MAT_DATE_LOCALE, useValue: 'en-GB' },           // ✅ UK locale → dd/MM/yyyy
+  ],
 })
 export class TaskAnalytics implements OnInit {
 

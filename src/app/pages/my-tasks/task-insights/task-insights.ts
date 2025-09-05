@@ -19,7 +19,7 @@ import { MatDividerModule } from '@angular/material/divider';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
-import { provideNativeDateAdapter } from '@angular/material/core';
+import { MAT_DATE_LOCALE, provideNativeDateAdapter } from '@angular/material/core';
 import { Tasks } from '../../../services/tasks';
 import { TaskAnalytics } from '../task-analytics/task-analytics';
 import { Subject } from 'rxjs';
@@ -59,7 +59,8 @@ export type ChartOptions = {
   ],
   templateUrl: './task-insights.html',
   styleUrls: ['./task-insights.scss'],
-  providers: [provideNativeDateAdapter()],
+  providers: [provideNativeDateAdapter(), { provide: MAT_DATE_LOCALE, useValue: 'en-GB' },           // ✅ UK locale → dd/MM/yyyy
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class TaskInsights implements OnInit, OnDestroy {

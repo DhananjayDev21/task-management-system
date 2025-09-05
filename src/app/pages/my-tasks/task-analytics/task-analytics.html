@@ -86,18 +86,41 @@
 
             <div class="filter-row">
                 <!-- Start Date -->
-                <div class="filter-group">
+                <!-- <div class="filter-group">
                     <label for="startDate" class="filter-label">Start Date From</label>
                     <input id="startDate" type="date" class="filter-input" [(ngModel)]="filters.startDateFrom"
                         name="startDate" (change)="onFilterChange()" aria-describedby="startDate" />
+                </div> -->
+                <div class="form-section">
+                    <label for="startDate">Start Date From</label>
+                    <div>
+                        <input (ngModelChange)="onFilterChange()" matInput [matDatepicker]="startPicker"
+                            [(ngModel)]="filters.startDateFrom" placeholder="dd/mm/yyyy" name="startDate"
+                            #startDateRef="ngModel" />
+                        <mat-datepicker-toggle matSuffix [for]="startPicker"></mat-datepicker-toggle>
+                        <mat-datepicker #startPicker></mat-datepicker>
+                    </div>
                 </div>
 
-                <!-- End Date -->
-                <div class="filter-group">
+                <div class="form-section">
+                    <label for="startDate">End Date To</label>
+                    <div>
+                        <input (ngModelChange)="onFilterChange()" matInput [matDatepicker]="startPicker"
+                            [(ngModel)]="filters.endDateTo" placeholder="dd/mm/yyyy" name="endDateTo"
+                            #startDateRef="ngModel" />
+                        <mat-datepicker-toggle matSuffix [for]="startPicker"></mat-datepicker-toggle>
+                        <mat-datepicker #startPicker></mat-datepicker>
+                    </div>
+                </div>
+
+
+
+
+                <!-- <div class="filter-group">
                     <label for="endDate" class="filter-label">End Date To</label>
                     <input id="endDate" type="date" class="filter-input" [(ngModel)]="filters.endDateTo" name="endDate"
                         (change)="onFilterChange()" aria-describedby="endDate" />
-                </div>
+                </div> -->
 
                 <!-- Overdue -->
                 <div class="filter-group">

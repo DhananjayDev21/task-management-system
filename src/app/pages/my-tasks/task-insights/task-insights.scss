@@ -158,6 +158,8 @@ $transition: 0.3s ease;
     }
 
     .date-range-container {
+        width: 100%;
+
         padding: 1rem;
 
         h3 {
@@ -179,7 +181,10 @@ $transition: 0.3s ease;
             input[type="date"] {
                 font-size: 0.85rem;
                 padding: 0.45rem;
+                width: 100%;
+
             }
+
         }
 
         .actions {
@@ -207,5 +212,77 @@ $transition: 0.3s ease;
     .task-analytics-container {
         margin: 0rem;
         padding: 0rem;
+    }
+}
+
+.form-section {
+    flex: 1;
+    min-width: 220px;
+    display: flex;
+    flex-direction: column;
+    margin: 20px 0;
+
+    label {
+        font-size: 13px;
+        font-weight: 500;
+        margin-bottom: 6px;
+        color: #374151;
+    }
+
+    /* Container around input + toggle */
+    >div {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        /* input grows, toggle stays tight */
+        align-items: center;
+
+        border: 1px solid #e5e7eb;
+        border-radius: 6px;
+        background: #f9fafb;
+        transition: border-color 0.2s;
+
+        /* focus ring when input is active */
+        &:focus-within {
+            border-color: #2563eb;
+        }
+    }
+
+    /* Native inputs, selects, and Angular Material matInput */
+    input,
+    select,
+    input[matinput],
+    input[matInput],
+    .mat-mdc-input-element {
+        width: 100%;
+        padding: 10px 12px;
+        border: 0;
+        /* border on the container instead */
+        border-radius: 6px;
+        /* keeps nice radius if no toggle */
+        font-size: 14px;
+        background: transparent;
+        color: #111827;
+        font-family: 'Roboto', 'Segoe UI', Arial, sans-serif;
+        outline: none;
+        box-shadow: none;
+    }
+
+    /* Datepicker toggle (element selector, not class) */
+    mat-datepicker-toggle {
+        display: inline-flex;
+        align-items: center;
+        margin-right: 4px;
+        /* tiny breathing room from the edge */
+
+        .mat-mdc-icon-button {
+            width: 36px;
+            height: 36px;
+        }
+
+        /* optional: make icon size comfy */
+        .mat-datepicker-toggle-default-icon {
+            font-size: 20px;
+            line-height: 1;
+        }
     }
 }
