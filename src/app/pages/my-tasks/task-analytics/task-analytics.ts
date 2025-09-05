@@ -198,6 +198,9 @@ export class TaskAnalytics implements OnInit {
     this.filters.startDateFrom = sevenDaysAgo.toISOString().split('T')[0];
     this.filters.endDateTo = today.toISOString().split('T')[0];
 
+    console.log(this.filters.startDateFrom + ' ' + this.filters.endDateTo);
+
+
     this.applyFilters();
   }
 

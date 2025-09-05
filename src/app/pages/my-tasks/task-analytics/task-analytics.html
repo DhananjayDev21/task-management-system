@@ -95,8 +95,7 @@
                     <label for="startDate">Start Date From</label>
                     <div>
                         <input (ngModelChange)="onFilterChange()" matInput [matDatepicker]="startPicker"
-                            [(ngModel)]="filters.startDateFrom" placeholder="dd/mm/yyyy" name="startDate"
-                            #startDateRef="ngModel" />
+                            [(ngModel)]="filters.startDateFrom" placeholder="dd/mm/yyyy" name="startDate" />
                         <mat-datepicker-toggle matSuffix [for]="startPicker"></mat-datepicker-toggle>
                         <mat-datepicker #startPicker></mat-datepicker>
                     </div>
@@ -106,8 +105,7 @@
                     <label for="startDate">End Date To</label>
                     <div>
                         <input (ngModelChange)="onFilterChange()" matInput [matDatepicker]="startPicker"
-                            [(ngModel)]="filters.endDateTo" placeholder="dd/mm/yyyy" name="endDateTo"
-                            #startDateRef="ngModel" />
+                            [(ngModel)]="filters.endDateTo" placeholder="dd/mm/yyyy" name="endDateTo" />
                         <mat-datepicker-toggle matSuffix [for]="startPicker"></mat-datepicker-toggle>
                         <mat-datepicker #startPicker></mat-datepicker>
                     </div>
