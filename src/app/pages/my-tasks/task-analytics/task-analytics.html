@@ -104,10 +104,10 @@
                 <div class="form-section">
                     <label for="startDate">End Date To</label>
                     <div>
-                        <input (ngModelChange)="onFilterChange()" matInput [matDatepicker]="startPicker"
+                        <input (ngModelChange)="onFilterChange()" matInput [matDatepicker]="endPicker"
                             [(ngModel)]="filters.endDateTo" placeholder="dd/mm/yyyy" name="endDateTo" />
-                        <mat-datepicker-toggle matSuffix [for]="startPicker"></mat-datepicker-toggle>
-                        <mat-datepicker #startPicker></mat-datepicker>
+                        <mat-datepicker-toggle matSuffix [for]="endPicker"></mat-datepicker-toggle>
+                        <mat-datepicker #endPicker></mat-datepicker>
                     </div>
                 </div>
 
