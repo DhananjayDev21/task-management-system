@@ -62,19 +62,19 @@
 
         /* Status glow */
         &.completed {
-            border-top: 4px solid #22c55e;
+            border-top: 4px solid #66BB6A;
         }
 
         &.pending {
-            border-top: 4px solid #f59e0b;
+            border-top: 4px solid #FFC107;
         }
 
         &.overdue {
-            border-top: 4px solid #ef4444;
+            border-top: 4px solid #AB47BC;
         }
 
         &.in-progress {
-            border-top: 4px solid #3b82f6; // blue
+            border-top: 4px solid #42A5F5; // blue
         }
 
         .task-header {
@@ -99,20 +99,21 @@
                 text-transform: capitalize;
 
                 &.high {
-                    background: #fee2e2; // light red background
-                    color: #b91c1c; // dark red text
+                    background: #E53935; // red
+                    color: #FFFFFF; // white text
                 }
 
                 &.medium {
-                    background: #fef3c7; // light yellow background
-                    color: #92400e; // dark amber text
+                    background: #FF7043; // orange
+                    color: #FFFFFF; // white text
                 }
 
                 &.low {
-                    background: #dcfce7; // light green background
-                    color: #166534; // dark green text
+                    background: #29B6F6; // sky blue
+                    color: #FFFFFF; // white text
                 }
             }
+
 
         }
 
@@ -232,33 +233,80 @@
     }
 }
 
-.filter-bar {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.8rem;
-    margin: 0.5rem 0 1rem 0;
+// .filter-bar {
+//     display: flex;
+//     flex-wrap: wrap;
+//     gap: 0.8rem;
+//     margin: 0.5rem 0 1rem 0;
 
-    span {
-        cursor: pointer;
-        padding: 0.3rem 0.8rem;
-        border-radius: 12px;
-        background: #f3f4f6;
-        border: 1px solid #cbd5e1;
-        font-size: 0.9rem;
-        transition: 0.2s;
+//     span {
+//         cursor: pointer;
+//         padding: 0.3rem 0.8rem;
+//         border-radius: 12px;
+//         background: #f3f4f6;
+//         border: 1px solid #cbd5e1;
+//         font-size: 0.9rem;
+//         transition: 0.2s;
 
-        &.active {
-            background: #3b82f6;
-            color: white;
-            border-color: #2563eb;
-            font-weight: 500;
-        }
+//         &.active {
+//             background: #3b82f6;
+//             color: white;
+//             border-color: #2563eb;
+//             font-weight: 500;
+//         }
 
-        &:hover {
-            background: #e2e8f0;
-        }
-    }
-}
+//         &:hover {
+//             background: #e2e8f0;
+//         }
+//     }
+// }
+
+// .filter-bar {
+//     display: flex;
+//     flex-wrap: wrap;
+//     gap: 0.5rem;
+//     margin-bottom: 1rem;
+
+//     span {
+//         padding: 4px 10px;
+//         border-radius: 4px;
+//         font-size: 0.85rem;
+//         font-weight: 500;
+//         cursor: pointer;
+//         background: #f9fafb;
+//         color: #333;
+//         transition: all 0.2s ease;
+
+//         &:hover {
+//             opacity: 0.9;
+//         }
+
+//         &.active {
+//             color: #fff; // always white text when active
+//         }
+
+//         /* ---- Status colors ---- */
+//         &.pending {
+//             background: #FFE082; // light yellow
+
+//             &.active {
+//                 background: #FFC107; // dark amber
+//             }
+//         }
+
+
+
+//         /* Neutral for "All" */
+//         &.all {
+//             background: #ECEFF1; // light neutral gray
+
+//             &.active {
+//                 background: #607D8B; // slate gray
+//                 color: #fff;
+//             }
+//         }
+//     }
+// }
 
 .filter-bar {
     display: flex;
@@ -267,112 +315,81 @@
     margin-bottom: 1rem;
 
     span {
-        padding: 4px 10px;
-        border-radius: 4px;
+        padding: 6px 12px;
+        border-radius: 20px;
         font-size: 0.85rem;
         font-weight: 500;
         cursor: pointer;
-        background: #f9fafb;
-        color: #333;
-        transition: all 0.2s ease;
+        background: #f1f5f9; // light gray
+        color: #374151; // dark gray
+        border: 1px solid white;
+        transition: all 0.2s ease-in-out;
+        margin-top: 20px;
 
         &:hover {
-            opacity: 0.9;
+            background: #e2e8f0;
+            transform: translateY(-1px);
         }
 
         &.active {
+            background: #14b8a6; // teal
             color: #fff;
+            border-color: white;
         }
 
-        /* ---- Status colors ---- */
         &.pending {
-            background: #fef3c7;
 
-            /* light yellow */
             &.active {
-                background: #d97706;
+                background: #FFC107; // green
             }
-
-            /* dark yellow/orange */
         }
+
 
         &.in-progress {
-            background: #dbeafe;
 
-            /* light blue */
             &.active {
-                background: #2563eb;
+                background: #42A5F5; // blue
             }
-
-            /* blue */
         }
 
         &.completed {
-            background: #dcfce7;
 
-            /* light green */
             &.active {
-                background: #16a34a;
+                background: #66BB6A; // green
             }
-
-            /* green */
         }
 
         &.on-hold {
-            background: #fee2e2;
 
-            /* light red */
             &.active {
-                background: #dc2626;
+                background: #AB47BC; // purple
             }
-
-            /* red */
         }
 
         /* ---- Priority colors ---- */
         &.low {
-            background: #f3f4f6;
 
-            /* light gray */
             &.active {
-                background: #6b7280;
+                background: #29B6F6; // darker gray
             }
-
-            /* darker gray */
         }
 
         &.medium {
-            background: #e0f2fe;
 
-            /* light sky blue */
             &.active {
-                background: #0284c7;
+                background: #FF7043; // deep orange
             }
-
-            /* darker sky blue */
         }
 
         &.high {
-            background: #ffe4e6;
-
-            /* light pink/red */
-            &.active {
-                background: #be123c;
-            }
-
-            /* dark red */
-        }
-
-        /* Neutral for "All" */
-        &.All {
-            background: #e5e7eb;
 
             &.active {
-                background: #374151;
+                background: #E53935; // dark red
             }
         }
     }
 }
+
 
 
 /* -------------------

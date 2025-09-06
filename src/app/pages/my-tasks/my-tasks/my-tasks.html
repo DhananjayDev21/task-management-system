@@ -34,7 +34,7 @@
                     @for (filter of group.filters; track filter.name) {
                     <span (click)="setFilter(group, filter.name)" [class.active]="group.activeFilter === filter.name"
                         [ngClass]="filter.name">
-                        {{ filter.name }} ({{ filter.count }})
+                        {{ filter.name }} {{ filter.count }}
                     </span>
                     }
                 </div>
